@@ -28,12 +28,22 @@ npm exec --package . coinstats -- --help
 
 ## Auth
 
+1. Sign up at [openapi.coinstats.app](https://openapi.coinstats.app).
+2. Create a CoinStats API key in the dashboard.
+3. Configure the CLI with that key:
+
 ```bash
 coinstats login --api-key <your-api-key>
 export COINSTATS_API_KEY=<your-api-key>
 ```
 
 Environment variables take priority over the saved config in `~/.coinstats/config.json`.
+
+You can verify what the CLI will use with:
+
+```bash
+coinstats whoami
+```
 
 ## Command Groups
 

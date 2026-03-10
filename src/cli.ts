@@ -47,6 +47,10 @@ type CommandRuntimeOptions = OutputOptions & {
   yes?: boolean;
 };
 
+const SIGNUP_URL = 'https://openapi.coinstats.app';
+const LOGIN_COMMAND = 'coinstats login --api-key <key>';
+const API_KEY_ENV_VAR = 'COINSTATS_API_KEY';
+
 function writeStdout(state: CliState, text: string) {
   state.stdout += text;
 }
@@ -100,6 +104,18 @@ function buildSchemaPayload() {
   };
 }
 
+function buildAuthHelp() {
+  return {
+    signupUrl: SIGNUP_URL,
+    loginCommand: LOGIN_COMMAND,
+    envVar: API_KEY_ENV_VAR,
+  };
+}
+
+function buildMissingAuthMessage() {
+  return `Missing CoinStats API key. Go to ${SIGNUP_URL} to sign up and create an API key, then run: ${LOGIN_COMMAND} or set ${API_KEY_ENV_VAR}=<key>.`;
+}
+
 async function runApiCommand(
   definition: CommandDefinition,
   rawOptions: Record<string, unknown>,
@@ -116,11 +132,7 @@ async function runApiCommand(
   const apiKey = resolveApiKey({ savedKey: savedConfig.apiKey });
 
   if (operationRequiresAuth(definition.operationId) && !apiKey) {
-    return formatError(
-      'Missing CoinStats API key. Set COINSTATS_API_KEY or run: coinstats login --api-key <key>',
-      'UNAUTHORIZED',
-      401,
-    );
+    return formatError(buildMissingAuthMessage(), 'UNAUTHORIZED', 401);
   }
 
   const parameters = getOperationParameters(definition.operationId);
@@ -314,6 +326,7 @@ function buildProgram(state: CliState) {
       const envKey = process.env.COINSTATS_API_KEY;
       const apiKey = resolveApiKey({ savedKey: savedConfig.apiKey });
       const source = envKey ? 'COINSTATS_API_KEY' : savedConfig.apiKey ? 'saved config' : 'missing';
+      const authHelp = source === 'missing' ? buildAuthHelp() : undefined;
 
       writeStdout(
         state,
@@ -322,6 +335,7 @@ function buildProgram(state: CliState) {
             source,
             apiKey: maskApiKey(apiKey),
             baseUrl: resolveBaseUrl(savedConfig),
+            ...(authHelp ? { authHelp } : {}),
           },
           null,
           2,
