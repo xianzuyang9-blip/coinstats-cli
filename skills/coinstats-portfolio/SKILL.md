@@ -21,7 +21,8 @@ allowed-tools: Bash(coinstats:*)
 ## Auth Setup
 
 ```bash
-coinstats login --api-key <key>
+export COINSTATS_API_KEY=<key>
+coinstats whoami
 ```
 
 ## Portfolio Identification

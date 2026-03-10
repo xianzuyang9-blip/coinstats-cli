@@ -34,8 +34,8 @@ describe('auth guidance', () => {
     expect(payload.code).toBe('UNAUTHORIZED');
     expect(payload.status).toBe(401);
     expect(payload.error).toContain('https://openapi.coinstats.app');
-    expect(payload.error).toContain('coinstats login --api-key <key>');
-    expect(payload.error).toContain('COINSTATS_API_KEY');
+    expect(payload.error).toContain('export COINSTATS_API_KEY=<key>');
+    expect(payload.error).toContain('coinstats login');
   });
 
   it('includes signup guidance in whoami when auth is missing', async () => {
@@ -47,7 +47,18 @@ describe('auth guidance', () => {
     expect(result.exitCode).toBe(0);
     expect(payload.source).toBe('missing');
     expect(payload.authHelp.signupUrl).toBe('https://openapi.coinstats.app');
-    expect(payload.authHelp.loginCommand).toBe('coinstats login --api-key <key>');
+    expect(payload.authHelp.loginCommand).toBe('coinstats login');
+    expect(payload.authHelp.exportCommand).toBe('export COINSTATS_API_KEY=<key>');
     expect(payload.authHelp.envVar).toBe('COINSTATS_API_KEY');
+  });
+
+  it('allows login to read the API key from COINSTATS_API_KEY', async () => {
+    process.env.COINSTATS_API_KEY = 'env-api-key';
+
+    const { runCli } = await import('../../src/cli.js');
+    const result = await runCli(['login']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('Saved CoinStats credentials');
   });
 });

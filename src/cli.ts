@@ -48,8 +48,9 @@ type CommandRuntimeOptions = OutputOptions & {
 };
 
 const SIGNUP_URL = 'https://openapi.coinstats.app';
-const LOGIN_COMMAND = 'coinstats login --api-key <key>';
+const LOGIN_COMMAND = 'coinstats login';
 const API_KEY_ENV_VAR = 'COINSTATS_API_KEY';
+const EXPORT_COMMAND = `export ${API_KEY_ENV_VAR}=<key>`;
 
 function writeStdout(state: CliState, text: string) {
   state.stdout += text;
@@ -108,12 +109,13 @@ function buildAuthHelp() {
   return {
     signupUrl: SIGNUP_URL,
     loginCommand: LOGIN_COMMAND,
+    exportCommand: EXPORT_COMMAND,
     envVar: API_KEY_ENV_VAR,
   };
 }
 
 function buildMissingAuthMessage() {
-  return `Missing CoinStats API key. Go to ${SIGNUP_URL} to sign up and create an API key, then run: ${LOGIN_COMMAND} or set ${API_KEY_ENV_VAR}=<key>.`;
+  return `Missing CoinStats API key. Go to ${SIGNUP_URL} to sign up and create an API key, then run: ${EXPORT_COMMAND} and ${LOGIN_COMMAND}.`;
 }
 
 async function runApiCommand(
@@ -302,11 +304,22 @@ function buildProgram(state: CliState) {
 
   program
     .command('login')
-    .description('Save a CoinStats API key to local config')
-    .requiredOption('--api-key <key>', 'CoinStats API key')
+    .description('Save the current CoinStats API key to local config')
+    .option('--api-key <key>', 'CoinStats API key')
     .option('--base-url <url>', 'Override the CoinStats API base URL')
-    .action(async (options: { apiKey: string; baseUrl?: string }) => {
-      await saveConfig({ apiKey: options.apiKey, baseUrl: options.baseUrl });
+    .action(async (options: { apiKey?: string; baseUrl?: string }) => {
+      const apiKey = options.apiKey || process.env.COINSTATS_API_KEY;
+
+      if (!apiKey) {
+        writeStderr(
+          state,
+          `Missing CoinStats API key. Set ${EXPORT_COMMAND} and rerun ${LOGIN_COMMAND}, or pass --api-key.\n`,
+        );
+        setExitCode(state, 1);
+        return;
+      }
+
+      await saveConfig({ apiKey, baseUrl: options.baseUrl });
       writeStdout(state, 'Saved CoinStats credentials to ~/.coinstats/config.json\n');
     });
 
