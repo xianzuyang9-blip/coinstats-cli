@@ -6,29 +6,12 @@ Command-line interface for the CoinStats Public API, designed for AI agents and 
 
 ## Install
 
-Install the CLI:
-
 ```bash
 npm install -g coinstats-cli
+npx skills add CoinStatsHQ/coinstats-cli -g --skill '*'
 ```
 
-Install all CoinStats skills without the interactive picker:
-
-```bash
-npx skills add CoinStatsHQ/coinstats-cli --all
-```
-
-Install a specific skill only:
-
-```bash
-npx skills add CoinStatsHQ/coinstats-cli --skill coinstats-wallet-data
-```
-
-Install all CoinStats skills for one agent without prompts:
-
-```bash
-npx skills add CoinStatsHQ/coinstats-cli --skill '*' --agent codex -y
-```
+The second command opens the agent picker with all CoinStats skills selected and installs them globally for the agents you choose.
 
 ## Local Checkout
 
