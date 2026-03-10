@@ -1,5 +1,5 @@
 ---
-name: coinstats-wallet
+name: coinstats-wallet-data
 description: CoinStats wallet tracking and wallet sync commands. Use when checking balances, transactions, charts, and DeFi exposure for wallets.
 metadata:
   openclaw:
@@ -16,7 +16,7 @@ metadata:
 allowed-tools: Bash(coinstats:*)
 ---
 
-# CoinStats Wallet
+# CoinStats Wallet Data
 
 ## Auth Setup
 

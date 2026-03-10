@@ -11,6 +11,21 @@ npm install -g coinstats-cli
 npx skills add CoinStatsHQ/coinstats-cli
 ```
 
+## Local Checkout
+
+```bash
+npm install
+npm run build
+npm link
+coinstats --help
+```
+
+If you do not want to link the binary globally, run commands from the repo with:
+
+```bash
+npm exec --package . coinstats -- --help
+```
+
 ## Auth
 
 ```bash
@@ -75,7 +90,7 @@ This repo ships section-based skills under `skills/`:
 
 - `coinstats-coins`
 - `coinstats-tickers`
-- `coinstats-wallet`
+- `coinstats-wallet-data`
 - `coinstats-exchange`
 - `coinstats-fiats`
 - `coinstats-nft`
@@ -92,6 +107,7 @@ This repo ships section-based skills under `skills/`:
 npm install
 npm run generate:client
 npm run build
+npm link
 npm test
 npm run lint
 npm run check:coverage
